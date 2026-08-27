@@ -7,9 +7,15 @@ import WatchKit
 final class MatchController: ObservableObject {
     @Published private(set) var engine: MatchEngine
 
+    /// A state of the match, and the point that led out of it.
+    private struct Step {
+        let engine: MatchEngine
+        let scorer: Team
+    }
+
     /// Every previous state of the match, newest last. A match is a few hundred
     /// small structs at most, so keeping them all is cheaper than replaying.
-    private var undoStack: [MatchEngine] = []
+    private var undoStack: [Step] = []
 
     let startedAt: Date
 
@@ -20,12 +26,16 @@ final class MatchController: ObservableObject {
 
     var canUndo: Bool { !undoStack.isEmpty }
 
+    /// Who was given the point that undo would take back, so the button can
+    /// say which side it is about to correct.
+    var lastScorer: Team? { undoStack.last?.scorer }
+
     func score(_ team: Team) {
         guard !engine.isFinished else { return }
 
         var updated = engine
         updated.score(team)
-        undoStack.append(engine)
+        undoStack.append(Step(engine: engine, scorer: team))
         playFeedback(from: engine, to: updated)
         engine = updated
     }
@@ -33,7 +43,7 @@ final class MatchController: ObservableObject {
     /// Takes back the last point, however far back into the match it reaches.
     func undo() {
         guard let previous = undoStack.popLast() else { return }
-        engine = previous
+        engine = previous.engine
         WKInterfaceDevice.current().play(.click)
     }
 

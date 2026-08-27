@@ -45,6 +45,13 @@ final class MatchStore: ObservableObject {
         save()
     }
 
+    /// Replaces a match already on disk, matched by id.
+    func update(_ match: MatchRecord) {
+        guard let index = matches.firstIndex(where: { $0.id == match.id }) else { return }
+        matches[index] = match
+        save()
+    }
+
     func delete(_ match: MatchRecord) {
         matches.removeAll { $0.id == match.id }
         save()

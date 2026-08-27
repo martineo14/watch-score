@@ -72,22 +72,32 @@ final class WorkoutTracker: NSObject, ObservableObject {
 
         do {
             try await builder.endCollection(at: Date())
-
             // Read the totals before finishing: the builder is done afterwards.
-            let beatsPerMinute = HKUnit.count().unitDivided(by: .minute())
-            vitals = MatchVitals(
-                averageHeartRate: value(from: builder, .heartRate, in: beatsPerMinute) { $0.averageQuantity() },
-                maxHeartRate: value(from: builder, .heartRate, in: beatsPerMinute) { $0.maximumQuantity() },
-                activeCalories: value(from: builder, .activeEnergyBurned, in: .kilocalorie()) { $0.sumQuantity() }
-            )
-
+            vitals = self.vitals(from: builder)
             _ = try await builder.finishWorkout()
         } catch {
             print("Could not finish the workout: \(error)")
         }
 
         clear()
-        return vitals?.isEmpty == false ? vitals : nil
+        return vitals
+    }
+
+    /// The totals so far, without ending anything. Used when a match finishes
+    /// but might still be taken back, so the workout has to keep running.
+    func currentVitals() -> MatchVitals? {
+        guard let builder else { return nil }
+        return vitals(from: builder)
+    }
+
+    private func vitals(from builder: HKLiveWorkoutBuilder) -> MatchVitals? {
+        let beatsPerMinute = HKUnit.count().unitDivided(by: .minute())
+        let measured = MatchVitals(
+            averageHeartRate: value(from: builder, .heartRate, in: beatsPerMinute) { $0.averageQuantity() },
+            maxHeartRate: value(from: builder, .heartRate, in: beatsPerMinute) { $0.maximumQuantity() },
+            activeCalories: value(from: builder, .activeEnergyBurned, in: .kilocalorie()) { $0.sumQuantity() }
+        )
+        return measured.isEmpty ? nil : measured
     }
 
     private func value(from builder: HKLiveWorkoutBuilder,

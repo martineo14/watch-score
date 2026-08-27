@@ -10,6 +10,7 @@ struct MatchView: View {
     @State private var confirmEnd = false
     @State private var finishedRecord: MatchRecord?
     @State private var isFinishing = false
+    @State private var endedEarly = false
 
     init(options: MatchOptions) {
         _controller = StateObject(wrappedValue: MatchController(options: options))
@@ -21,10 +22,10 @@ struct MatchView: View {
     var body: some View {
         if let record = finishedRecord {
             NavigationStack {
-                MatchSummaryView(record: record)
+                MatchSummaryView(record: record, resume: resumeOption)
                     .toolbar {
                         ToolbarItem(placement: .topBarTrailing) {
-                            Button("Done") { dismiss() }
+                            Button("Done") { saveAndClose(record) }
                         }
                     }
             }
@@ -41,18 +42,11 @@ struct MatchView: View {
                 pointScore
                 Spacer(minLength: 0)
                 pointButtons
+                undoButton
             }
             .padding(.horizontal, 2)
             .navigationTitle(engine.scoreLine)
             .toolbar {
-                ToolbarItem(placement: .topBarLeading) {
-                    Button {
-                        controller.undo()
-                    } label: {
-                        Image(systemName: "arrow.uturn.backward")
-                    }
-                    .disabled(!controller.canUndo)
-                }
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
                         confirmEnd = true
@@ -63,7 +57,10 @@ struct MatchView: View {
             }
         }
         .confirmationDialog("End this match?", isPresented: $confirmEnd) {
-            Button("End match", role: .destructive) { finish() }
+            Button("End match", role: .destructive) {
+                endedEarly = true
+                finish()
+            }
             Button("Keep playing", role: .cancel) {}
         }
         .onChange(of: engine.isFinished) { _, isFinished in
@@ -163,19 +160,80 @@ struct MatchView: View {
         .padding(.bottom, 2)
     }
 
+    /// Named with the side it will correct, because the mistake this fixes is
+    /// nearly always a point given to the wrong one.
+    @ViewBuilder
+    private var undoButton: some View {
+        if controller.canUndo {
+            Button {
+                controller.undo()
+            } label: {
+                HStack(spacing: 4) {
+                    Image(systemName: "arrow.uturn.backward")
+                    Text("Undo")
+                    if let scorer = controller.lastScorer {
+                        Text(scorer.shortName)
+                            .foregroundStyle(scorer == .you ? Color.accentColor : Color.orange)
+                    }
+                }
+                .font(.system(size: 12))
+                .frame(maxWidth: .infinity, minHeight: 22)
+            }
+            .buttonStyle(.bordered)
+            .tint(.gray)
+        }
+    }
+
     // MARK: - Ending
 
+    /// Ends the match and saves it, but leaves the workout running: the result
+    /// can still be taken back from the summary, and restarting a workout
+    /// would split the match into two of them in Health.
     private func finish() {
         // Reachable both from the end-match button and from the match finishing
         // on its own, so it has to be safe to call twice.
         guard finishedRecord == nil, !isFinishing else { return }
         isFinishing = true
 
+        let record = controller.makeRecord(vitals: workout.currentVitals())
+        store.add(record)
+        finishedRecord = record
+    }
+
+    private var resumeOption: MatchSummaryView.ResumeOption {
+        MatchSummaryView.ResumeOption(
+            title: endedEarly ? "Keep playing" : "Undo last point",
+            note: endedEarly
+                ? "Puts you back on court. This match stops being saved."
+                : "Marked the wrong side? This takes the last point back and puts you on court again.",
+            perform: resume
+        )
+    }
+
+    /// Back onto the court: the match is unsaved, and the point that ended it
+    /// is taken back so the score is playable again.
+    private func resume() {
+        if let record = finishedRecord {
+            store.delete(record)
+        }
+        if engine.isFinished {
+            controller.undo()
+        }
+        finishedRecord = nil
+        isFinishing = false
+        endedEarly = false
+    }
+
+    /// Closes the workout, folds its final numbers into the saved match, and
+    /// leaves.
+    private func saveAndClose(_ record: MatchRecord) {
         Task { @MainActor in
-            let vitals = await workout.end()
-            let record = controller.makeRecord(vitals: vitals)
-            store.add(record)
-            finishedRecord = record
+            if let vitals = await workout.end() {
+                var finished = record
+                finished.vitals = vitals
+                store.update(finished)
+            }
+            dismiss()
         }
     }
 }

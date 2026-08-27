@@ -4,6 +4,15 @@ import SwiftUI
 /// numbers that are actually worth reading on a wrist.
 struct MatchSummaryView: View {
     let record: MatchRecord
+    /// Offered only for a match that has just been played, never in History.
+    var resume: ResumeOption? = nil
+
+    /// A way back onto the court, for when the match ended by mistake.
+    struct ResumeOption {
+        var title: String
+        var note: String
+        var perform: () -> Void
+    }
 
     private var stats: MatchStats { record.stats }
 
@@ -23,6 +32,20 @@ struct MatchSummaryView: View {
                         .foregroundStyle(.secondary)
                 }
                 .padding(.vertical, 2)
+            }
+
+            if let resume {
+                Section {
+                    Button {
+                        resume.perform()
+                    } label: {
+                        Label(resume.title, systemImage: "arrow.uturn.backward")
+                            .font(.caption)
+                    }
+                } footer: {
+                    Text(resume.note)
+                        .font(.system(size: 11))
+                }
             }
 
             Section("Stats") {

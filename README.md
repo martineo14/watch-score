@@ -12,7 +12,10 @@ afterwards. Standalone watchOS app — no iPhone companion needed.
   of 3.
 - **Tells you what is at stake.** The score screen calls out game point, set
   point, match point and golden point as they come up.
-- **Undo any point**, however far back — useful when you tap for the wrong side.
+- **Undo any point**, however far back. The button under the score names the
+  side it will correct ("Undo Opp"), and taking a point back rewinds games,
+  sets, serve and stats with it. If the mistaken point ended the match, the
+  summary offers the same way back onto the court.
 - **Stats when the match ends:** points won, points share, points won on serve,
   games, breaks of serve and longest run of points, for both sides.
 - **History** of every match, with your win/loss record per sport.
