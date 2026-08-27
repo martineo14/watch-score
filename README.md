@@ -1,5 +1,7 @@
 # Watch Score
 
+<img src="WatchScore/Assets.xcassets/AppIcon.appiconset/AppIcon.png" width="88" alt="App icon: a tennis ball on a court-coloured ground">
+
 An Apple Watch app for scoring tennis and padel matches, and keeping the stats
 afterwards. Standalone watchOS app — no iPhone companion needed.
 
@@ -26,6 +28,24 @@ afterwards. Standalone watchOS app — no iPhone companion needed.
 
 Matches are stored on the watch as a JSON file, so there is nothing to set up
 and nothing leaves the device.
+
+## The screens
+
+> **Mockups, not simulator screenshots.** They are drawn from the SwiftUI layout
+> code at the true size of a 45 mm display, 198 × 242 points, with the scores and
+> stats the app would really put there. The icons stand in for SF Symbols, and
+> the match shown is a real one played through the scoring engine: 6-1, 6-7(5),
+> 7-6(6) over 205 points.
+
+| Home | New match | Scoring |
+| :---: | :---: | :---: |
+| <img src="docs/screens/home.png" width="210" alt="Home screen listing New Match and History, with a win/loss record for tennis and padel"> | <img src="docs/screens/new-match.png" width="210" alt="New match screen with tennis and padel tiles, sets, golden point and tiebreak toggles, and a Start button"> | <img src="docs/screens/scoring.png" width="210" alt="Scoring screen showing 40-30, MATCH POINT, heart rate and calories, two point buttons and an undo button"> |
+| Two ways in, and your record per sport. | Opens on whatever format you played last. | Serve, clock, heart rate, what is at stake, and an undo that names the side it will correct. |
+
+| Summary | History |
+| :---: | :---: |
+| <img src="docs/screens/summary.png" width="210" alt="Match summary showing You won, the set scores, an Undo last point button and the points won statistics"> | <img src="docs/screens/history.png" width="210" alt="History list of past matches with score lines, dates and win or loss badges"> |
+| Saved as soon as the match ends, with a way back onto the court if it ended by mistake. Scrolls on to heart rate, calories and the set-by-set breakdown. | Newest first. The last row is a match ended early: the unfinished set in brackets, and neither a win nor a loss. |
 
 ## Running it
 
