@@ -45,6 +45,7 @@ struct MatchView: View {
                 undoButton
             }
             .padding(.horizontal, 2)
+            .padding(.bottom, 2)
             .navigationTitle(engine.scoreLine)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
@@ -157,7 +158,6 @@ struct MatchView: View {
                 .tint(team == .you ? .accentColor : .gray)
             }
         }
-        .padding(.bottom, 2)
     }
 
     /// Named with the side it will correct, because the mistake this fixes is
