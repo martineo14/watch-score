@@ -14,7 +14,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "AA0000000000000000000027"
+               BlueprintIdentifier = "AA000000000000000000002E"
                BuildableName = "WatchScore.app"
                BlueprintName = "WatchScore"
                ReferencedContainer = "container:WatchScore.xcodeproj">
@@ -44,7 +44,7 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "AA0000000000000000000027"
+            BlueprintIdentifier = "AA000000000000000000002E"
             BuildableName = "WatchScore.app"
             BlueprintName = "WatchScore"
             ReferencedContainer = "container:WatchScore.xcodeproj">
@@ -61,7 +61,7 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "AA0000000000000000000027"
+            BlueprintIdentifier = "AA000000000000000000002E"
             BuildableName = "WatchScore.app"
             BlueprintName = "WatchScore"
             ReferencedContainer = "container:WatchScore.xcodeproj">

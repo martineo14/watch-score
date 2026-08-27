@@ -12,6 +12,8 @@ struct MatchRecord: Codable, Identifiable, Equatable {
     var stats: MatchStats
     /// Nil when the match was ended before anybody won it.
     var winner: Team?
+    /// What the watch measured, when Health was available.
+    var vitals: MatchVitals?
 
     var sport: Sport { options.sport }
     var wasAbandoned: Bool { winner == nil }
@@ -32,13 +34,15 @@ struct MatchRecord: Codable, Identifiable, Equatable {
     }
 
     /// Builds the record for a match that is being closed, finished or not.
-    init(engine: MatchEngine, startedAt: Date, endedAt: Date = Date()) {
+    init(engine: MatchEngine, startedAt: Date, endedAt: Date = Date(),
+         vitals: MatchVitals? = nil) {
         self.date = startedAt
         self.duration = endedAt.timeIntervalSince(startedAt)
         self.options = engine.options
         self.sets = engine.completedSets
         self.stats = engine.stats
         self.winner = engine.winner
+        self.vitals = vitals
         let games = engine.games
         self.unfinishedSetGames = engine.isFinished ? nil : games
     }

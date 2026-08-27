@@ -37,8 +37,8 @@ final class MatchController: ObservableObject {
         WKInterfaceDevice.current().play(.click)
     }
 
-    func makeRecord(endedAt: Date = Date()) -> MatchRecord {
-        MatchRecord(engine: engine, startedAt: startedAt, endedAt: endedAt)
+    func makeRecord(vitals: MatchVitals? = nil, endedAt: Date = Date()) -> MatchRecord {
+        MatchRecord(engine: engine, startedAt: startedAt, endedAt: endedAt, vitals: vitals)
     }
 
     private func playFeedback(from old: MatchEngine, to new: MatchEngine) {

@@ -16,6 +16,10 @@ afterwards. Standalone watchOS app — no iPhone companion needed.
 - **Stats when the match ends:** points won, points share, points won on serve,
   games, breaks of serve and longest run of points, for both sides.
 - **History** of every match, with your win/loss record per sport.
+- **Stays awake while you play.** Each match runs as a HealthKit workout, so
+  dropping your wrist between points does not send the app to sleep. Heart rate
+  and calories show next to the score, get saved with the result, and the match
+  lands in Health as a workout that counts towards your rings.
 
 Matches are stored on the watch as a JSON file, so there is nothing to set up
 and nothing leaves the device.
@@ -30,6 +34,14 @@ and nothing leaves the device.
 
 Requires watchOS 10 or newer.
 
+The first match asks for permission to read heart rate and calories and to save
+workouts. Decline it and everything still works — you just get no vitals, and
+the app can sleep when your wrist drops.
+
+**Heart rate needs a real watch.** The simulator has no sensor, so on the
+simulator the match still scores and saves, but the vitals are simply absent
+from the summary.
+
 ## How it is put together
 
 | File | What lives there |
@@ -38,16 +50,18 @@ Requires watchOS 10 or newer.
 | `Models/MatchStats.swift` | Counters kept as the match is played, so the summary needs no replay. |
 | `Models/MatchController.swift` | Undo stack and haptics for the match on screen. |
 | `Models/MatchRecord.swift` | A finished match, as it is stored. |
+| `Health/WorkoutTracker.swift` | The HealthKit workout that keeps the app awake and collects heart rate and calories. Scoring never depends on it. |
 | `Storage/MatchStore.swift` | The match history file, and the last format used. |
 | `Views/` | The five screens: home, new match, scoring, summary, history. |
 
 The engine is a plain `struct` with no UI or storage in it, which is what makes
 undo a matter of keeping the previous value around.
 
+The app icon is drawn by `Tools/make_icon.py` — change a colour at the top of
+that file and run it to regenerate.
+
 ## Ideas for later
 
-- Keep the app awake during a match with a `HKWorkoutSession`, so it survives a
-  dropped wrist, and record calories and heart rate alongside the score.
 - Serve/return splits per set, and stats across matches (win rate by opponent,
   by sport, by month).
 - A complication to start a match straight from the watch face.

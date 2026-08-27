@@ -46,6 +46,21 @@ struct MatchSummaryView: View {
                         opponent: "\(stats.longestStreak[1])")
             }
 
+            if let vitals = record.vitals {
+                Section("Body") {
+                    if let average = vitals.averageHeartRate {
+                        LabeledContent("Avg heart rate") { Text("\(average) bpm") }
+                    }
+                    if let peak = vitals.maxHeartRate {
+                        LabeledContent("Max heart rate") { Text("\(peak) bpm") }
+                    }
+                    if let calories = vitals.activeCalories {
+                        LabeledContent("Active calories") { Text("\(calories) kcal") }
+                    }
+                }
+                .font(.caption)
+            }
+
             if !record.sets.isEmpty {
                 Section("Sets") {
                     ForEach(Array(record.sets.enumerated()), id: \.element.id) { index, set in
