@@ -58,7 +58,9 @@ struct MatchSummaryView: View {
                 }
             }
         }
-        .navigationTitle(record.date.formatted(date: .abbreviated, time: .shortened))
+        // Date only: a date and time together is wider than the watch title bar
+        // and gets truncated to something like "Aug 24, 2026 at 7...".
+        .navigationTitle(record.date.formatted(date: .abbreviated, time: .omitted))
     }
 
     private var resultText: String {
